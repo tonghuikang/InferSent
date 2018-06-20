@@ -30,6 +30,7 @@ class BLSTMEncoder(nn.Module):
 
         self.enc_lstm = nn.LSTM(self.word_emb_dim, self.enc_lstm_dim, 1,
                                 bidirectional=True, dropout=self.dpout_model)
+#        self.enc_lstm.flatten_parameters()
 
     def is_cuda(self):
         # either all weights are on cpu or they are on gpu
@@ -50,6 +51,7 @@ class BLSTMEncoder(nn.Module):
 
         # Handling padding in Recurrent Networks
         sent_packed = nn.utils.rnn.pack_padded_sequence(sent, sent_len)
+        self.enc_lstm.flatten_parameters()
         sent_output = self.enc_lstm(sent_packed)[0]  # seqlen x batch x 2*nhid
         sent_output = nn.utils.rnn.pad_packed_sequence(sent_output)[0]
 
