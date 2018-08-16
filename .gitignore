@@ -2,5 +2,10 @@ dataset/GloVe
 dataset/MultiNLI
 dataset/SNLI
 encoder/infersent.allnli.pickle
-
+dataset/fastText/
+encoder/.ipynb_checkpoints/
+__pycache__/
+encoder/infersent1.pkl
+encoder/infersent2.pkl
+*.pyc
 *.swp

@@ -20,10 +20,14 @@ import torch.nn as nn
 BLSTM (max/mean) encoder
 """
 
+
 class InferSent(nn.Module):
 
     def __init__(self, config):
         super(InferSent, self).__init__()
+        device_num = torch.cuda.current_device()
+        torch.cuda.set_device(device_num)
+        print(device_num, torch.cuda.device(0), torch.cuda.device_count(), torch.cuda.get_device_name(0))
         self.bsize = config['bsize']
         self.word_emb_dim = config['word_emb_dim']
         self.enc_lstm_dim = config['enc_lstm_dim']
@@ -218,8 +222,9 @@ class InferSent(nn.Module):
 
         embeddings = []
         for stidx in range(0, len(sentences), bsize):
-            batch = Variable(self.get_batch(
-                        sentences[stidx:stidx + bsize]), volatile=True)
+            with torch.no_grad():
+                batch = Variable(self.get_batch(
+                            sentences[stidx:stidx + bsize]))
             if self.is_cuda():
                 batch = batch.cuda()
             batch = self.forward(
@@ -246,7 +251,8 @@ class InferSent(nn.Module):
             import warnings
             warnings.warn('No words in "%s" have w2v vectors. Replacing \
                            by "%s %s"..' % (sent, self.bos, self.eos))
-        batch = Variable(self.get_batch(sent), volatile=True)
+        with torch.no_grad():
+            batch = Variable(self.get_batch(sent))
 
         if self.is_cuda():
             batch = batch.cuda()
