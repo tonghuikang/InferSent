@@ -1,29 +1,27 @@
-# My notes
-
-This repo is well documented as always.
+# Old notes when I tried it previously
 
 Loading model - this is what I did.
 
-Python2
-However, I couldn't run encoder/demo on GCP GPU :(
-RuntimeError: Expected object of type torch.cuda.FloatTensor but found type torch.FloatTensor for argument #4 'mat1'
-model = torch.load('infersent.allnli.pickle', map_location={'cuda:0': 'cpu'})
+Python2 <BR>
+However, I couldn't run encoder/demo on GCP GPU :( <BR>
+RuntimeError: Expected object of type torch.cuda.FloatTensor but found type torch.FloatTensor for argument #4 'mat1' <BR>
+model = torch.load('infersent.allnli.pickle', map_location={'cuda:0': 'cpu'}) <BR>
 #https://discuss.pytorch.org/t/on-a-cpu-device-how-to-load-checkpoint-saved-on-gpu-device/349
 
-Python3
-Can run GPU, but shows this warning:
-/home/hkmac/anaconda3/envs/fastai/lib/python3.6/site-packages/torch/serialization.py:325: SourceChangeWarning: source code of class 'torch.nn.modules.rnn.LSTM' has changed. you can retrieve the original source code by accessing the object's source attribute or set `torch.nn.Module.dump_patches = True` and use the patch tool to revert the changes.
-  warnings.warn(msg, SourceChangeWarning)
+Python3 <BR>
+Can run GPU, but shows this warning: <BR>
+/home/hkmac/anaconda3/envs/fastai/lib/python3.6/site-packages/torch/serialization.py:325: SourceChangeWarning: source code of class 'torch.nn.modules.rnn.LSTM' has changed. you can retrieve the original source code by accessing the object's source attribute or set `torch.nn.Module.dump_patches = True` and use the patch tool to revert the changes. <BR>
+  warnings.warn(msg, SourceChangeWarning) <BR>
 Ok reinstall nltk and it worked.
-you can retrieve the original source code by accessing the object's source attribute or set `torch.nn.Module.dump_patches = True` and use the patch tool to revert the changes.
+you can retrieve the original source code by accessing the object's source attribute or set `torch.nn.Module.dump_patches = True` and use the patch tool to revert the changes. <BR>
   warnings.warn(msg, SourceChangeWarning)
-#https://discuss.pytorch.org/t/set-torch-nn-module-dump-patches-true-and-use-the-patch-tool-to-revert-the-changes/8660
-Also this error:
-/home/hkmac/InferSent/encoder/models.py:53: UserWarning: RNN module weights are not part of single contiguous chunk of memory. This means they need to be compacted at every call, possibly greatly increasing memory usage. To compact weights again call flatten_parameters().
-  sent_output = self.enc_lstm(sent_packed)[0]  # seqlen x batch x 2*nhid
-So I added this -
-self.enc_lstm = torch.nn.ModuleList(self.enc_lstm) before         
-sent_output = self.enc_lstm(sent_packed)[0]  # seqlen x batch x 2*nhid
+#https://discuss.pytorch.org/t/set-torch-nn-module-dump-patches-true-and-use-the-patch-tool-to-revert-the-changes/8660 <BR>
+Also this error: <BR>
+/home/hkmac/InferSent/encoder/models.py:53: UserWarning: RNN module weights are not part of single contiguous chunk of memory. This means they need to be compacted at every call, possibly greatly increasing memory usage. To compact weights again call flatten_parameters(). <BR>
+  sent_output = self.enc_lstm(sent_packed)[0]  # seqlen x batch x 2*nhid <BR>
+So I added this - <BR>
+self.enc_lstm = torch.nn.ModuleList(self.enc_lstm) before <BR>
+sent_output = self.enc_lstm(sent_packed)[0]  # seqlen x batch x 2*nhid <BR>
 https://discuss.pytorch.org/t/rnn-module-weights-are-not-part-of-single-contiguous-chunk-of-memory/6011/13
 
 
