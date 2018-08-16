@@ -1,3 +1,70 @@
+# HK notes
+
+### Overall comments
+Compare to spaCy, this is very bulky and troublesome. 
+
+### Installation comments
+
+Using Timothy's snapshot dated 25 June 2018. It uses CUDA 9.2. It probably uses CUDnn 7.1.
+
+To install `torch` (because Tensorflow is by Google):
+```
+sudo pip3 install torch torchvision
+python3 -c "import torch; device_num = torch.cuda.current_device(); print(device_num, torch.cuda.device(0), torch.cuda.device_count(), torch.cuda.get_device_name(0))"
+# Should print something like this: 0 <torch.cuda.device object at 0x7f5deb6b0390> 1 Tesla K80
+```
+
+
+Run the following commands in `InferSent/` in parallel because it will take some time to download and unzip. The first one will take the longest because it is downloading from a slow source.
+```
+cd datasets
+./get_data.bash
+```
+
+```
+mkdir dataset/GloVe
+curl -Lo dataset/GloVe/glove.840B.300d.zip http://nlp.stanford.edu/data/glove.840B.300d.zip
+unzip dataset/GloVe/glove.840B.300d.zip -d dataset/GloVe/
+ls
+```
+
+```
+mkdir dataset/fastText
+curl -Lo dataset/fastText/crawl-300d-2M.vec.zip https://s3-us-west-1.amazonaws.com/fasttext-vectors/crawl-300d-2M.vec.zip
+unzip dataset/fastText/crawl-300d-2M.vec.zip -d dataset/fastText/
+ls
+```
+
+```
+curl -Lo encoder/infersent1.pkl https://s3.amazonaws.com/senteval/infersent/infersent1.pkl
+```
+
+```
+curl -Lo encoder/infersent2.pkl https://s3.amazonaws.com/senteval/infersent/infersent2.pkl
+```
+
+```
+python3 -c "import nltk; nltk.download('punkt')"
+```
+
+### Execution of `encoder/demo.ipynb`
+```embeddings = model.encode(sentences, bsize=128, tokenize=False, verbose=True)```
+Does not use GPU mode. `model.is_cuda()` returns `False`. Neither did the example used GPU.
+
+
+```
+data, target = Variable(data, volatile=True), Variable(target)
+```
+should now be
+```
+with torch.no_grad():            
+     data, target = Variable(data), Variable(target)
+```
+ref: https://discuss.pytorch.org/t/torch-no-grad/12296/9 <BR>
+Accordingly edited `./models.py` and `./encoder/models.py`
+ 
+Added a few sample sentences and compared the respective dot products. 
+
 # InferSent
 
 *InferSent* is a *sentence embeddings* method that provides semantic representations for English sentences. It is trained on natural language inference data and generalizes well to many different tasks.
